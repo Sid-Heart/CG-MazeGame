@@ -1,4 +1,3 @@
-
 # CG-MazeGame
 A Simple Maze Game Using Open GL
 
@@ -18,4 +17,4 @@ N/n - NewGame
 
 U/u - Raise Level
 
-+ - Zoom Out/In
+'+' - Zoom
