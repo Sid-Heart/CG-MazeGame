@@ -4,16 +4,18 @@ A Simple Maze Game Using Open GL
 
 **Controls**
 
-W/w-UP
+W/w - UP
 
-S/s-DOWN
+S/s - DOWN
 
-A/a-LEFT
+A/a - LEFT
 
-D/d-RIGHT
+D/d - RIGHT
 
-R/r-Reset
+R/r - Reset
 
-N/n-NewGame
+N/n - NewGame
 
-U/u-Raise Level
+U/u - Raise Level
+
++ - Zoom Out/In

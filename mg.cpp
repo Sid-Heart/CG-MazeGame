@@ -1,24 +1,24 @@
 #include <iostream>
-#include <ctime>
 #include <math.h>
 #include <sys/time.h>
-#include <cstring>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "shapes.h"
 using namespace std;
 
 int Height = 5, Width = 5;
-const float w = 500, h = 500, o = 10;
+const float w = 500, h = 500, o = 20;
 float ww = w - 2 * o, hh = h - 2 * o;
 int posx, posy, endx, endy, startx, starty;
 Player m_Player(0, 0, ww / Width / 2 * 4.0f / 5.0f,
 		hh / Height / 2 * 4.0f / 5.0f);
 void DFS(int i, int j);
+bool Zoom = true;
 
 struct Cell {
-	bool visited;	// has this cell visited for making maze
-	bool road[4];// is each four directions of cells(up, down, right, left) connected to this cell
+	bool visited;
+	bool road[4];   // is each four directions of cells(up, down, right, left)
 
 	Cell() {
 		visited = false;
@@ -27,7 +27,7 @@ struct Cell {
 		road[2] = false;
 		road[3] = false;
 	}
-} Node[100][100];
+} Node[200][200];
 
 void createMaze() {
 	ww = w - 2 * o, hh = h - 2 * o;
@@ -68,6 +68,14 @@ void DrawCells() {
 				m_Player.SetState(Player::Happy);
 
 			if (i == posy && j == posx) {
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				if (Zoom)
+					gluOrtho2D(cx - 100, cx + 100, cy - 100, cy + 100);
+				else
+					gluOrtho2D(0, 500, 0, 500);
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
 				m_Player.SetPos(cx, cy);
 				m_Player.DrawFace();
 			}
@@ -167,6 +175,13 @@ void init() {
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(255 / 255.0, 228 / 255.0, 181 / 255.0, 1);
+
+	glColor3f(0, 0, 1);
+	char ch[] = { '-', '>', ' ', 'L', 'E', 'V', 'E', 'L', ' ', (
+			(Width / 100) ? (char) (Width / 100 + '0') : ' '), (
+			(Width / 10) ? (char) ((Width / 10) % 10 + '0') : ' '),
+			(char) (Width % 10 + '0'), ' ', '<', '-' };
+	MakeText((w - strlen(ch) * 9) * 0.5f, h - o / 1.2f, ch);
 	glColor3f(0, 0, 0);
 	DrawCells();
 	glutSwapBuffers();
@@ -190,11 +205,11 @@ void Restart() {
 
 void NextLevel() {
 	Height++, Width++;
-	assert(Height<100);
+	assert(Height < 200);
 	Restart();
 }
 
-void NextLevel(int val){
+void NextLevel(int val) {
 	NextLevel();
 }
 
@@ -239,6 +254,9 @@ void keyboard(unsigned char ch, int x, int y) {
 	case 'U':
 	case 'u':
 		NextLevel();
+		break;
+	case '+':
+		Zoom=!Zoom;
 		break;
 	}
 	if (posx == endx && posy == endy) {

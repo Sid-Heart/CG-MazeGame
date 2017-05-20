@@ -7,6 +7,21 @@ typedef struct {
 
 } Vector2f;
 
+void print_bitmap_string(void* font, char* s)    //func. for displaying text
+		{
+	if (s && strlen(s)) {
+		while (*s) {
+			glutBitmapCharacter(font, *s);
+			s++;
+		}
+	}
+}
+
+void MakeText(float x, float y, char * ch) {
+	glRasterPos2f(x, y);
+	print_bitmap_string(GLUT_BITMAP_HELVETICA_18, ch);
+}
+
 void RoundRect(float x, float y, float width, float height, float radius,
 		int resolution) {
 	float step = (2.0f * acos(-1)) / resolution, angle = 0.0f, x_offset,
@@ -218,7 +233,7 @@ public:
 
 	void DrawFace() {
 		glColor3f(255 / 255.0, 160 / 255.0, 122 / 255.0);
-		RoundRect(posx - wid, posy + hei, wid * 2, hei * 2, 11, 64);
+		RoundRect(posx - wid, posy + hei, wid * 2, hei * 2, wid/9, 64);
 		glColor3f(255 / 255.0, 218 / 255.0, 185 / 255.0);
 		DrawCirle(posx, posy, wid / 5);
 		glColor3f(1, 1, 1);
