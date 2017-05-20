@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stack>
 #include "shapes.h"
 using namespace std;
 
@@ -14,7 +15,9 @@ int posx, posy, endx, endy, startx, starty;
 Player m_Player(0, 0, ww / Width / 2 * 4.0f / 5.0f,
 		hh / Height / 2 * 4.0f / 5.0f);
 void DFS(int i, int j);
-bool Zoom = true;
+void DFSnr(int i, int j);
+void display();
+bool Zoom = false;
 
 struct Cell {
 	bool visited;
@@ -38,7 +41,10 @@ void createMaze() {
 	endy = Height - 1;
 	endx = rand() % Width;
 	Node[0][posx].road[0] = Node[Height - 1][endx].road[1] = true;
-	DFS(rand() % Height, rand() % Width);
+	if (Width < 80)
+		DFS(rand() % Height, rand() % Width);
+	else
+		DFSnr(rand() % Height, rand() % Width);
 	for (int i = 0; i < Height; ++i)
 		for (int j = 0; j < Width; ++j)
 			Node[i][j].visited = false;
@@ -135,8 +141,7 @@ void DFS(int i, int j) {
 	else {
 		Node[i][j].visited = true;
 		srand(time(NULL) * i * j);
-		int i1 = rand() % 100;
-		cerr << "i1=" << i1;
+		int i1 = rand() % 1000;
 		for (int j1 = 0; j1 < 4; j1++) {
 			if (i + 1 < Height && !Node[i + 1][j].visited && i1 % 4 == 0) {
 				Node[i][j].road[1] = true;
@@ -159,6 +164,50 @@ void DFS(int i, int j) {
 				DFS(i, j - 1);
 			}
 			i1++;
+		}
+	}
+}
+
+void DFSnr(int i, int j) {
+	stack<pair<int, int> > Stack;
+	Stack.push(pair<int, int>(i, j));
+
+	if (Node[i][j].visited)
+		return;
+	else {
+		while (!Stack.empty()) {
+			pair<int, int> p = Stack.top();
+			i = p.first, j = p.second;
+			Stack.pop();
+			srand(time(NULL) * i * j);
+			int i1 = rand() % 100;
+			for (int j1 = 0; j1 < 4; j1++) {
+				if (i + 1 < Height && !Node[i + 1][j].visited && i1 % 4 == 0) {
+					Node[i][j].road[1] = true;
+					Node[i + 1][j].road[0] = true;
+					Node[i + 1][j].visited = true;
+					Stack.push(pair<int, int>(i + 1, j));
+				}
+				if (i - 1 >= 0 && !Node[i - 1][j].visited && i1 % 4 == 1) {
+					Node[i][j].road[0] = true;
+					Node[i - 1][j].road[1] = true;
+					Node[i - 1][j].visited = true;
+					Stack.push(pair<int, int>(i - 1, j));
+				}
+				if (j + 1 < Width && !Node[i][j + 1].visited && i1 % 4 == 2) {
+					Node[i][j].road[2] = true;
+					Node[i][j + 1].road[3] = true;
+					Node[i][j + 1].visited = true;
+					Stack.push(pair<int, int>(i, j + 1));
+				}
+				if (j - 1 >= 0 && !Node[i][j - 1].visited && i1 % 4 == 3) {
+					Node[i][j].road[3] = true;
+					Node[i][j - 1].road[2] = true;
+					Node[i][j - 1].visited = true;
+					Stack.push(pair<int, int>(i, j - 1));
+				}
+				i1++;
+			}
 		}
 	}
 }
@@ -256,7 +305,7 @@ void keyboard(unsigned char ch, int x, int y) {
 		NextLevel();
 		break;
 	case '+':
-		Zoom=!Zoom;
+		Zoom = !Zoom;
 		break;
 	}
 	if (posx == endx && posy == endy) {
