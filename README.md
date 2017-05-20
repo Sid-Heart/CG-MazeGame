@@ -1,7 +1,7 @@
 # CG-MazeGame
 A Simple Maze Game Using Open GL
 
-+**Controls**
+#Controls
 
 -W/w - UP
 
@@ -17,4 +17,4 @@ A Simple Maze Game Using Open GL
 
 -U/u - Raise Level
 
--'+' - Zoom
+'+' - Zoom
