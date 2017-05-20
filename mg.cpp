@@ -1,16 +1,19 @@
-#include <GL/gl.h>
-#include <GL/glut.h>
 #include <iostream>
 #include <ctime>
+#include <math.h>
 #include <sys/time.h>
 #include <cstring>
 #include <stdlib.h>
+#include <assert.h>
+#include "shapes.h"
 using namespace std;
 
-const int Height = 10, Width = 10;
+int Height = 5, Width = 5;
 const float w = 500, h = 500, o = 10;
-const float ww = w - 2 * o, hh = h - 2 * o;
-int posx, posy, endx, endy;
+float ww = w - 2 * o, hh = h - 2 * o;
+int posx, posy, endx, endy, startx, starty;
+Player m_Player(0, 0, ww / Width / 2 * 4.0f / 5.0f,
+		hh / Height / 2 * 4.0f / 5.0f);
 void DFS(int i, int j);
 
 struct Cell {
@@ -24,9 +27,12 @@ struct Cell {
 		road[2] = false;
 		road[3] = false;
 	}
-} Node[Height][Width];
+} Node[100][100];
 
 void createMaze() {
+	ww = w - 2 * o, hh = h - 2 * o;
+	m_Player = Player(0, 0, ww / Width / 2 * 4.0f / 5.0f,
+			hh / Height / 2 * 4.0f / 5.0f);
 	posy = 0;
 	posx = rand() % Width;
 	endy = Height - 1;
@@ -36,10 +42,12 @@ void createMaze() {
 	for (int i = 0; i < Height; ++i)
 		for (int j = 0; j < Width; ++j)
 			Node[i][j].visited = false;
+
+	startx = posx;
+	starty = posy;
 }
 
 void DrawCells() {
-
 	for (int i = 0; i < Height; ++i) {
 		for (int j = 0; j < Width; ++j) {
 			float cx = (2 * (j) + 1) * ww / Width / 2 + o, cy = (2
@@ -56,12 +64,12 @@ void DrawCells() {
 				glEnd();
 			}
 
+			if (posx == endx && posy == endy)
+				m_Player.SetState(Player::Happy);
+
 			if (i == posy && j == posx) {
-				glColor3f(139 / 255.0, 69 / 255.0, 19 / 255.0);
-				glPointSize(min(dx, dy));
-				glBegin(GL_POINTS);
-				glVertex2f(cx, cy);
-				glEnd();
+				m_Player.SetPos(cx, cy);
+				m_Player.DrawFace();
 			}
 
 			glLineWidth(2);
@@ -106,8 +114,11 @@ void DrawCells() {
 				glEnd();
 			}
 		}
-		cerr << endl;
 	}
+	if (Node[posy][posx].visited)
+		m_Player.SetState(Player::Sad);
+	else
+		m_Player.SetState(Player::Normal);
 }
 
 void DFS(int i, int j) {
@@ -165,6 +176,28 @@ void idle() {
 	glutPostRedisplay();
 }
 
+void Reset() {
+	posx = startx, posy = starty;
+	for (int i = 0; i < Height; ++i)
+		for (int j = 0; j < Width; ++j)
+			Node[i][j].visited = false;
+}
+
+void Restart() {
+	memset(Node, 0, sizeof(Node));
+	createMaze();
+}
+
+void NextLevel() {
+	Height++, Width++;
+	assert(Height<100);
+	Restart();
+}
+
+void NextLevel(int val){
+	NextLevel();
+}
+
 void keyboard(unsigned char ch, int x, int y) {
 	Node[posy][posx].visited = true;
 	switch (ch) {
@@ -195,14 +228,22 @@ void keyboard(unsigned char ch, int x, int y) {
 				&& !Node[posy][posx + 1].visited)
 			posx++;
 		break;
+	case 'r':
+	case 'R':
+		Reset();
+		break;
+	case 'n':
+	case 'N':
+		Restart();
+		break;
+	case 'U':
+	case 'u':
+		NextLevel();
+		break;
 	}
 	if (posx == endx && posy == endy) {
-		glutTimerFunc(1000, exit, 0);
+		glutTimerFunc(1000, NextLevel, 0);
 	}
-}
-
-void exit() {
-	exit(0);
 }
 
 int main(int argc, char ** argv) {

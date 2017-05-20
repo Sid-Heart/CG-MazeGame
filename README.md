@@ -11,3 +11,9 @@ S/s-DOWN
 A/a-LEFT
 
 D/d-RIGHT
+
+R/r-Reset
+
+N/n-NewGame
+
+U/u-Raise Level
