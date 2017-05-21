@@ -41,10 +41,12 @@ void createMaze() {
 	endy = Height - 1;
 	endx = rand() % Width;
 	Node[0][posx].road[0] = Node[Height - 1][endx].road[1] = true;
+
 	if (Width < 80)
 		DFS(rand() % Height, rand() % Width);
 	else
 		DFSnr(rand() % Height, rand() % Width);
+
 	for (int i = 0; i < Height; ++i)
 		for (int j = 0; j < Width; ++j)
 			Node[i][j].visited = false;
@@ -76,8 +78,9 @@ void DrawCells() {
 			if (i == posy && j == posx) {
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
-				if (Zoom)
-					gluOrtho2D(cx - 100, cx + 100, cy - 100, cy + 100);
+				if (Zoom && Width > 8)
+					gluOrtho2D(cx - 17 * dx, cx + 17 * dx, cy - 17 * dx,
+							cy + 17 * dx);
 				else
 					gluOrtho2D(0, 500, 0, 500);
 				glMatrixMode(GL_MODELVIEW);
