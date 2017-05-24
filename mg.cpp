@@ -72,7 +72,7 @@ void DrawCells() {
 				glEnd();
 			}
 
-			if (posx == endx && posy == endy)
+			if (-1 == endx && -1 == endy)
 				m_Player.SetState(Player::Happy);
 
 			if (i == posy && j == posx) {
@@ -228,11 +228,13 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(255 / 255.0, 228 / 255.0, 181 / 255.0, 1);
 
+	Width -= 4;
 	glColor3f(0, 0, 1);
 	char ch[] = { '-', '>', ' ', 'L', 'E', 'V', 'E', 'L', ' ', (
 			(Width / 100) ? (char) (Width / 100 + '0') : ' '), (
 			(Width / 10) ? (char) ((Width / 10) % 10 + '0') : ' '),
-			(char) (Width % 10 + '0'), ' ', '<', '-' };
+			(char) (Width % 10 + '0'), ' ', '<', '-', '\0' };
+	Width += 4;
 	MakeText((w - strlen(ch) * 9) * 0.5f, h - o / 1.2f, ch);
 	glColor3f(0, 0, 0);
 	DrawCells();
@@ -257,7 +259,13 @@ void Restart() {
 
 void NextLevel() {
 	Height++, Width++;
-	assert(Height < 200);
+	assert(Height < 205);
+	Restart();
+}
+
+void PreLevel() {
+	Height--, Width--;
+	assert(Height > 4);
 	Restart();
 }
 
@@ -306,6 +314,10 @@ void keyboard(unsigned char ch, int x, int y) {
 	case 'U':
 	case 'u':
 		NextLevel();
+		break;
+	case 'L':
+	case 'l':
+		PreLevel();
 		break;
 	case '+':
 		Zoom = !Zoom;

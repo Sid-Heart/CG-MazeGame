@@ -9,4 +9,5 @@ A Simple Maze Game Using Open GL
 - R/r - Reset 
 - N/n - NewGame
 - U/u - Raise Level 
+- L/l - Lower Level
 - '+' - Zoom
