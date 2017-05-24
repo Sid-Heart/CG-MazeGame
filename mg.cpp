@@ -313,6 +313,7 @@ void keyboard(unsigned char ch, int x, int y) {
 	}
 	if (posx == endx && posy == endy) {
 		glutTimerFunc(1000, NextLevel, 0);
+		endx = endy = -1;
 	}
 }
 
