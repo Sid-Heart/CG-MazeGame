@@ -1,5 +1,8 @@
-#include <GL/gl.h>
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <math.h>
 typedef struct {
 	float x;
@@ -18,8 +21,12 @@ void print_bitmap_string(void* font, char* s)    //func. for displaying text
 }
 
 void MakeText(float x, float y, char * ch) {
-	glRasterPos2f(x, y);
-	print_bitmap_string(GLUT_BITMAP_HELVETICA_18, ch);
+	#ifdef __EMSCRIPTEN__
+		std::cout<<"WebAssembly doesn't Support Legacy OpenGL Texts";
+	#else
+		glRasterPos2f(x, y);
+		print_bitmap_string(GLUT_BITMAP_HELVETICA_18, ch);
+	#endif
 }
 
 void RoundRect(float x, float y, float width, float height, float radius,
@@ -205,7 +212,11 @@ void RoundRect(float x, float y, float width, float height, float radius,
 }
 
 void DrawCirle(float x, float y, float r) {
-	glBegin(GL_POLYGON);
+	#ifdef __EMSCRIPTEN__
+		glBegin(GL_TRIANGLE_FAN);
+	#else
+		glBegin(GL_POLYGON);
+	#endif
 	for (int i = 0; i < 360; i += 10)
 		glVertex2f(x + r * cos(i * acos(-1) / 180),
 				y + r * sin(i * acos(-1) / 180));
@@ -245,18 +256,25 @@ public:
 
 		if (stat == Happy) {
 			glColor3f(0, 0, 0);
-			glBegin(GL_POLYGON);
+			#ifdef __EMSCRIPTEN__
+				glBegin(GL_TRIANGLES);
+			#else
+				glBegin(GL_POLYGON);
+			#endif
 			glVertex2f(posx - wid / 2.5f, posy - hei / 3);
 			glVertex2f(posx, posy - hei / 1.5f);
 			glVertex2f(posx + wid / 2.5f, posy - hei / 3);
 			glEnd();
 			glColor3f(1, 1, 1);
-			glBegin(GL_POLYGON);
+			#ifdef __EMSCRIPTEN__
+				glBegin(GL_TRIANGLES);
+			#else
+				glBegin(GL_POLYGON);
+			#endif
 			glVertex2f(posx - wid / 2.8f, posy - hei / 3.3f);
 			glVertex2f(posx, posy - hei / 1.8f);
 			glVertex2f(posx + wid / 2.8f, posy - hei / 3.3f);
 			glEnd();
-
 		} else if (stat == Normal) {
 			glColor3f(0, 0, 0);
 			DrawCirle(posx, posy - hei / 2, wid / 5);
@@ -264,13 +282,21 @@ public:
 			DrawCirle(posx, posy - hei / 2, wid / 7);
 		} else if (stat == Sad) {
 			glColor3f(0, 0, 0);
-			glBegin(GL_POLYGON);
+			#ifdef __EMSCRIPTEN__
+				glBegin(GL_TRIANGLES);
+			#else
+				glBegin(GL_POLYGON);
+			#endif
 			glVertex2f(posx - wid / 2.5f, posy - hei / 1.5f);
 			glVertex2f(posx, posy - hei / 3);
 			glVertex2f(posx + wid / 2.5f, posy - hei / 1.5f);
 			glEnd();
 			glColor3f(1, 1, 1);
-			glBegin(GL_POLYGON);
+			#ifdef __EMSCRIPTEN__
+				glBegin(GL_TRIANGLES);
+			#else
+				glBegin(GL_POLYGON);
+			#endif
 			glVertex2f(posx - wid / 2.8f, posy - hei / 1.3f);
 			glVertex2f(posx, posy - hei / 2.7f);
 			glVertex2f(posx + wid / 2.8f, posy - hei / 1.3f);

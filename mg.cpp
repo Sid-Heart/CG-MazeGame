@@ -64,7 +64,11 @@ void DrawCells() {
 
 			if (Node[i][j].visited) {
 				glColor3f(205 / 255.0, 133 / 255.0, 63 / 255.0);
-				glBegin(GL_POLYGON);
+				#ifdef __EMSCRIPTEN__
+					glBegin(GL_QUADS);
+				#else
+					glBegin(GL_POLYGON);
+				#endif
 				glVertex2f(cx - dx, cy + dy);
 				glVertex2f(cx + dx, cy + dy);
 				glVertex2f(cx + dx, cy - dy);
